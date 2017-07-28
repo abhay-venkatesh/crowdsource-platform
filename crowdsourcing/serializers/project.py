@@ -42,7 +42,8 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
     requester_handle = serializers.CharField(read_only=True)
     batch_files = BatchFileSerializer(many=True, read_only=True,
                                       fields=('id', 'name', 'size',
-                                              'column_headers', 'format', 'number_of_rows', 'first_row'))
+                                              'column_headers', 'format',
+                                              'number_of_rows', 'first_row', 'file'))
     template = TemplateSerializer(many=False, required=False)
 
     name = serializers.CharField(default='Untitled Project')
@@ -105,9 +106,11 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
             "name": 't_' + generate_random_id(),
             "items": template_items
         }
-
+        if 'post_mturk' in self.validated_data:
+            self.validated_data.pop('post_mturk')
         template_serializer = TemplateSerializer(data=template)
         project = models.Project.objects.create(owner=kwargs['owner'], amount_due=0,
+                                                post_mturk=False,
                                                 **self.validated_data)
         if template_serializer.is_valid():
             project_template = template_serializer.create(with_defaults=with_defaults, is_review=False,

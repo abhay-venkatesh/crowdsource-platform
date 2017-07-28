@@ -123,8 +123,9 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Upd
     def list_username(self, request, *args, **kwargs):
         pattern = request.query_params.get('pattern', '$')
         user_names = self.queryset.exclude(username=request.user.username) \
-            .filter(~Q(username__startswith='mock'), is_active=True, username__contains=pattern)
-        serializer = UserSerializer(instance=user_names, many=True, fields=('id', 'username'))
+            .filter(~Q(username__startswith='mock'), is_active=True, profile__handle__icontains=pattern,
+                    profile__is_worker=True)
+        serializer = UserSerializer(instance=user_names, many=True, fields=('id', 'handle'))
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     @list_route(methods=['get'], permission_classes=[IsAuthenticated, ])
@@ -165,11 +166,10 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,
     #         return Response(serializer.validated_data)
     #     raise serializers.ValidationError(detail=serializer.errors)
 
-    @detail_route(methods=['post'])
+    # @detail_route(methods=['post'])
     def update(self, request, user__username=None, *args, **kwargs):
-        if ('user' in request.data
-            and 'email' in request.data['user']
-                and request.user.email == request.data['user']['email']):
+        if 'user' in request.data and 'email' in request.data['user'] and \
+                request.user.email == request.data['user']['email']:
             del request.data['user']['email']
 
         serializer = UserProfileSerializer(instance=request.user.profile, data=request.data, partial=True)
@@ -304,9 +304,12 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,
             response_data.update({"account_balance": round(request.user.stripe_customer.account_balance, 2) / 100})
             response_data.update({"held_for_liability": 0})
 
-            if hasattr(request.user.stripe_customer, 'stripe_data') and request.user.stripe_customer.stripe_data is not None:
+            if hasattr(request.user.stripe_customer, 'stripe_data') and \
+                    request.user.stripe_customer.stripe_data is not None:
                 response_data.update({"default_card": request.user.stripe_customer.stripe_data.get('default_card')})
-        if hasattr(request.user, 'stripe_account') and request.user.stripe_account is not None and hasattr(request.user.stripe_account, 'stripe_data') and request.user.stripe_account.stripe_data is not None:
+        if hasattr(request.user, 'stripe_account') and request.user.stripe_account is not None \
+            and hasattr(request.user.stripe_account, 'stripe_data') and \
+                request.user.stripe_account.stripe_data is not None:
             response_data.update({"default_bank": request.user.stripe_account.stripe_data.get('default_bank')})
 
         return Response(response_data, status.HTTP_200_OK)

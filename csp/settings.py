@@ -45,7 +45,7 @@ REST_FRAMEWORK = {
         'rest_framework.serializers.HyperlinkedModelSerializer',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-        'oauth2_provider.ext.rest_framework.OAuth2Authentication',),
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',),
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
@@ -54,7 +54,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
@@ -66,6 +66,7 @@ OAUTH2_PROVIDER = {
 }
 ACCESS_TOKEN_EXPIRE_SECONDS = 604800
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
+OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL = 'oauth2_provider.AccessToken'
 MIGRATION_MODULES = {
     'oauth2_provider': 'crowdsourcing.migrations.oauth2_provider',
 }
@@ -76,11 +77,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sessions',
     'django.contrib.postgres',
+    'oauth2_provider',
     'corsheaders',
     'compressor',
     'crispy_forms',
     'rest_framework',
-    'oauth2_provider',
     'ws4redis',
     'crowdsourcing',
     'mturk'
@@ -330,6 +331,7 @@ SERVER_EMAIL = 'daemo@cs.stanford.edu'
 CELERY_REDIS_MAX_CONNECTIONS = 10
 CELERY_IGNORE_RESULT = True
 CELERY_STORE_ERRORS_EVEN_IF_IGNORED = True
+MIN_WORKERS_FOR_STATS = 10
 
 # LOGGING CONFIGURATION
 # ------------------------------------------------------------------------------

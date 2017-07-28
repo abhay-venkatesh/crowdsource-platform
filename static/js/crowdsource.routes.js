@@ -84,6 +84,12 @@
             controllerAs: 'vm'
         };
 
+        var trump_afterdark_demo = {
+            templateUrl: '/static/templates/demo/trumpafterdark.html',
+            controller: 'DemoController',
+            controllerAs: 'vm'
+        };
+
         var reddit_demo = {
             templateUrl: '/static/templates/demo/reddit.html',
             controller: 'DemoController',
@@ -244,6 +250,12 @@
             controllerAs: 'task'
         };
 
+        var preferences = {
+            templateUrl: '/static/templates/project/preferences.html',
+            controller: 'PreferencesController',
+            controllerAs: 'preferences'
+        };
+
         // States
         $stateProvider
 
@@ -273,6 +285,13 @@
                 url: '/cs-phd',
                 views: {
                     'content': phd_demo
+                },
+                authenticate: false
+            })
+            .state('demo.trumpafterdark', {
+                url: '/trump-afterdark',
+                views: {
+                    'content': trump_afterdark_demo
                 },
                 authenticate: false
             })
@@ -465,7 +484,7 @@
 
             .state('my_tasks', {
                 url: '/my-tasks',
-                title: 'Worker Status',
+                title: 'Worker',
                 views: {
                     'navbar': navbar,
                     'content': myTasks,
@@ -486,7 +505,7 @@
 
             .state('my_projects', {
                 url: '/my-projects',
-                title: 'Requester Status',
+                title: 'Requester',
                 views: {
                     'navbar': navbar,
                     'content': myProjects,
@@ -570,6 +589,16 @@
                 views: {
                     'navbar': navbar,
                     'content': taskFeed,
+                    'chat': overlay
+                },
+                authenticate: true
+            })
+            .state('requester_settings', {
+                url: '/requester-settings',
+                title: 'Requester Settings',
+                views: {
+                    'navbar': navbar,
+                    'content': preferences,
                     'chat': overlay
                 },
                 authenticate: true

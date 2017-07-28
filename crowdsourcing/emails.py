@@ -1,15 +1,15 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.template import Context
 from django.template.loader import render_to_string
 
 
-def send_mail(email_from, email_to, subject, text_content, html_content):
+def send_mail(email_from, email_to, subject, text_content, html_content, reply_to=None):
     mail = EmailMultiAlternatives(
         subject=subject,
         body=text_content,
         from_email=email_from,
-        to=[email_to]
+        to=[email_to],
+        reply_to=[reply_to] if reply_to is not None else []
     )
 
     mail.attach_alternative(html_content, "text/html")
@@ -59,13 +59,13 @@ def send_notifications_email(email, url, messages):
     email_from = 'Daemo Team <%s>' % settings.EMAIL_SENDER
     email_to = email
     subject = '[Daemo] Notifications on Daemo while you were away'
-    context = Context({
+    context = {
         'email_from': email_from,
         'email_to': email_to,
         'subject': subject,
         'url': url,
         'sender_list': messages
-    })
+    }
     text_content = render_to_string('emails/notifications.txt', context)
     html_content = render_to_string('emails/notifications.html', context)
     send_mail(email_from, email_to, subject, text_content, html_content)
@@ -74,27 +74,27 @@ def send_notifications_email(email, url, messages):
 def send_new_tasks_email(to, requester_handle, project_name, price, project_id, available_tasks):
     email_from = 'Daemo Team <%s>' % settings.EMAIL_SENDER
     subject = 'New Daemo task available: {}'.format(project_name)
-    context = Context({
+    context = {
         'unsubscribe_url': settings.SITE_HOST + '/unsubscribe',
         'project_url': settings.SITE_HOST + '/task-feed/{}'.format(project_id),
         'owner_handle': requester_handle,
         'available_tasks': available_tasks,
         'project_price': "{0:.2f}".format(price),
         'project_name': project_name
-    })
+    }
     text_content = render_to_string('emails/new-tasks-available.txt', context)
     html_content = render_to_string('emails/new-tasks-available.html', context)
     send_mail(email_from, to, subject, text_content, html_content)
 
 
-def send_task_returned_email(to, requester_handle, project_name, task_id, return_reason):
+def send_task_returned_email(to, requester_handle, project_name, task_id, return_reason, requester_email):
     email_from = 'Daemo Team <%s>' % settings.EMAIL_SENDER
     subject = '{} has asked for revision of your submission for {}'.format(requester_handle, project_name)
-    context = Context({
+    context = {
         'task_url': settings.SITE_HOST + '/task/{}/'.format(task_id),
         'return_reason': return_reason,
         'project_name': project_name
-    })
+    }
     text_content = render_to_string('emails/task-returned.txt', context)
     html_content = render_to_string('emails/task-returned.html', context)
-    send_mail(email_from, to, subject, text_content, html_content)
+    send_mail(email_from, to, subject, text_content, html_content, reply_to=requester_email)
