@@ -18,24 +18,24 @@
                 </div>
             </div>
             <div flex>
-              &nbsp
+                &nbsp
             </div>
             <div class="light placeholder">
-              <div class="_secondary-text-small" style="padding-left:10px"> Your project has been launched to: </div>
-              <div class="breadcrumb">
-                <div class="current">
-                  <md-icon md-font-set="material-icons">trending_up</md-icon>
-                  PRIORITY
+                <div class="_secondary-text-small" style="padding-left:10px"> Your project has been launched to:</div>
+                <div class="breadcrumb">
+                    <div class="current">
+                        <md-icon md-font-set="material-icons">trending_up</md-icon>
+                        PRIORITY
+                    </div>
+                    <div ng-class="{current: review.resolvedData.min_rating <= 2}">
+                        <md-icon md-font-set="material-icons">trending_flat</md-icon>
+                        NORMAL
+                    </div>
+                    <div ng-class="{current: review.resolvedData.min_rating < 1.99}">
+                        <md-icon md-font-set="material-icons">trending_down</md-icon>
+                        LATE
+                    </div>
                 </div>
-                <div ng-class="{current: review.resolvedData.min_rating <= 2}">
-                  <md-icon md-font-set="material-icons">trending_flat</md-icon>
-                  NORMAL
-                </div>
-                <div ng-class="{current: review.resolvedData.min_rating < 1.99}">
-                  <md-icon md-font-set="material-icons">trending_down</md-icon>
-                  LATE
-                </div>
-              </div>
             </div>
         </div>
         <md-toolbar style="font-size: medium; background-color: white; color: rgba(0, 0, 0, 0.87)">
@@ -52,7 +52,7 @@
                         </md-select>
                     </md-input-container>
                 </div>
-                <div>
+                <div class="_hide-xs _hide-sm">
                     <md-button class="md-primary" ng-click="review.reload()">
                         <md-icon md-font-set="material-icons" style="color: inherit">refresh
                         </md-icon>
@@ -60,7 +60,7 @@
                     </md-button>
 
                 </div>
-                <div class="_actions">
+                <div class="_actions _hide-xs _hide-sm">
                     <md-button class="md-primary" ng-click="review.downloadResults()">
                         <md-icon md-font-set="material-icons" style="color: inherit">file_download
                         </md-icon>
@@ -68,7 +68,7 @@
                         Download Results
                     </md-button>
                 </div>
-                <div ng-if="review.workers.length">
+                <div class="_hide-xs" ng-if="review.workers.length">
                     <md-button class="md-accent" ng-click="review.acceptAll()"
                                ng-disabled="!review.notAllApproved(null)">
                         <md-icon md-font-set="material-icons" style="color: inherit">done_all
@@ -115,9 +115,9 @@
                          style=" margin-bottom: 8px">
                     <md-subheader>
                         <div layout="row" layout-align="start center">
-                            <div class="_clickable"
+                            <div class="_clickable" style="min-height: 24px; line-height: 24px"
                                  ui-sref="public_profile({handle:worker.worker_alias})">{{ worker.worker_alias }}</div>
-                            <div class="_header-actions" style="margin-right: 0">
+                            <div class="_header-actions _hide-xs" style="margin-right: 0">
                                 <md-button ng-click="review.setRating(worker.worker, worker.worker_rating, 3.0)"
                                            ng-class="{'_button-active': worker.worker_rating.weight==3.0}">
                                     <md-icon md-font-set="material-icons">trending_up</md-icon>
@@ -166,7 +166,9 @@
 
                             </thead>
                             <tbody>
-                            <tr ng-repeat="task in worker.tasks" class="_md-table-row" ng-init="rowIndex = $index">
+                            <tr ng-repeat="task in worker.tasks" class="_md-table-row _collapsible-row"
+                                ng-hide="task.status === review.status.REJECTED"
+                                ng-init="rowIndex = $index">
                                 <td ng-class="{'_bold': task.submitted_at > review.lastOpened}"
                                     ng-init="taskColumns=review.getHeaderValues(task.task_data)">
                                     {{ task.submitted_at | amTimeAgo }}
@@ -258,7 +260,8 @@
 
                         </thead>
                         <tbody>
-                        <tr ng-repeat="task in review.workers" class="_md-table-row"
+                        <tr ng-repeat="task in review.workers" class="_md-table-row _collapsible-row"
+                            ng-class="{'_height-0': task.status == review.status.REJECTED}"
                             ng-init="taskColumns=review.getHeaderValues(task.task_data)">
                             <td ng-class="{'_bold': task.submitted_at > review.lastOpened}">
                                 {{ task.submitted_at | amTimeAgo }}

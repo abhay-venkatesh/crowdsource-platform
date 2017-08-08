@@ -90,6 +90,18 @@
             controllerAs: 'vm'
         };
 
+        var reviseandresubmit_demo = {
+            templateUrl: '/static/templates/demo/reviseandresubmit.html',
+            controller: 'DemoController',
+            controllerAs: 'vm'
+        };
+
+        var botcheck_demo = {
+            templateUrl: '/static/templates/demo/botcheck.html',
+            controller: 'DemoController',
+            controllerAs: 'vm'
+        };
+
         var reddit_demo = {
             templateUrl: '/static/templates/demo/reddit.html',
             controller: 'DemoController',
@@ -283,6 +295,7 @@
             })
             .state('demo.phd', {
                 url: '/cs-phd',
+                title: 'Where will you land after attending a top CS grad school?',
                 views: {
                     'content': phd_demo
                 },
@@ -290,8 +303,25 @@
             })
             .state('demo.trumpafterdark', {
                 url: '/trump-afterdark',
+                title: 'Trump After Dark: algorithmically augmented funny',
                 views: {
                     'content': trump_afterdark_demo
+                },
+                authenticate: false
+            })
+            .state('demo.reviseandresubmit', {
+                url: '/reviseandresubmit',
+                title: 'Revise and Resubmit: why one crowd worker beats one million',
+                views: {
+                    'content': reviseandresubmit_demo
+                },
+                authenticate: false
+            })
+            .state('demo.botcheck', {
+                url: '/botcheck',
+                title: 'Identifying Harassment Bots on Twitter',
+                views: {
+                    'content': botcheck_demo
                 },
                 authenticate: false
             })

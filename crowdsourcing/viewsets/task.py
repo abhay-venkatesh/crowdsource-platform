@@ -315,6 +315,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.delete()
         return Response({'status': 'deleted task'})
 
+    def create(self, request, *args, **kwargs):
+        return Response({"message": "NOT_IMPLEMENTED"})
+
     @detail_route(methods=['get'])
     def retrieve_with_data(self, request, *args, **kwargs):
         task = self.get_object()
@@ -516,7 +519,7 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
         serializer = TaskWorkerSerializer()
         with transaction.atomic():
             instance, http_status = serializer.create(worker=request.user,
-                                                      project=latest_revision.id)
+                                                      project=latest_revision.id, group_id=latest_revision.group_id)
         serialized_data = {}
         if http_status == 200:
             serialized_data = TaskWorkerSerializer(instance=instance, fields=('id', 'task', 'project_data')).data
@@ -532,6 +535,7 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
         instance, http_status = None, status.HTTP_204_NO_CONTENT
         obj.status = TaskWorker.STATUS_SKIPPED
         obj.save()
+        obj.sessions.all().filter(ended_at__isnull=True).update(ended_at=timezone.now())
         if user_prefs is not None:
             auto_accept = user_prefs.auto_accept
         if auto_accept:
@@ -541,9 +545,9 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
                 instance, http_status = serializer.create(worker=request.user, project=obj.task.project_id,
                                                           id=kwargs['pk'], task_id=obj.task_id)
 
-        refund_task.delay([{'id': obj.id}])
+        # refund_task.delay([{'id': obj.id}])
         update_worker_cache.delay([obj.worker_id], constants.TASK_SKIPPED)
-        mturk_hit_update.delay({'id': obj.task.id})
+        # mturk_hit_update.delay({'id': obj.task.id})
         serialized_data = {}
         if http_status == status.HTTP_200_OK:
             serialized_data = TaskWorkerSerializer(instance=instance).data
@@ -822,6 +826,7 @@ class TaskWorkerResultViewSet(viewsets.ModelViewSet):
                 task_worker.attempt += 1
                 task_worker.submitted_at = timezone.now()
                 task_worker.save()
+                task_worker.sessions.all().filter(ended_at__isnull=True).update(ended_at=timezone.now())
                 if task_status == TaskWorker.STATUS_SUBMITTED:
                     redis_publisher = RedisPublisher(facility='bot', users=[task_worker.task.project.owner])
                     front_end_publisher = RedisPublisher(facility='notifications',
@@ -963,10 +968,11 @@ class ReturnFeedbackViewSet(viewsets.ModelViewSet):
     serializer_class = ReturnFeedbackSerializer
 
     def create(self, request, *args, **kwargs):
+        tw_status = request.data.get('status', TaskWorker.STATUS_RETURNED)
         serializer = ReturnFeedbackSerializer(data=request.data)
         if serializer.is_valid():
             instance = serializer.create()
-            send_return_notification_email.delay(instance.id)
+            send_return_notification_email.delay(instance.id, tw_status == TaskWorker.STATUS_REJECTED)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             raise serializers.ValidationError(detail=serializer.errors)
