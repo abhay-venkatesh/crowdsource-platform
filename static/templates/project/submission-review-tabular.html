@@ -178,13 +178,12 @@
                                              ng-class="{'_clickable': task.status != review.status.ACCEPTED}"
                                              ng-click="review.updateStatus(review.status.ACCEPTED, task)">
                                         {{ task.status == review.status.ACCEPTED ? 'check_circle':'check_box_outline_blank' }}</md-icon>
-                                    <md-button class="md-raised"> 
+                                    <md-button class=""> 
                                       <md-icon md-font-set="material-icons" style="outline: none"
                                                ng-class="{'_clickable': task.status != review.status.ACCEPTED}"
                                                ng-click="review.updateStatus(review.status.ACCEPTED, task)">
                                           {{ task.status == review.status.ACCEPTED ? 'thumb_up': '' }}</md-icon>
-                                      Nice Work?
-                                      <md-progress-linear md-mode="determinate" value="{{ 50 }}"></md-progress-linear>
+                                      Nice Work
                                     </md-button>
                                             
                                 </td>
