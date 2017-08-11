@@ -997,7 +997,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         task_workers = self.paginate_queryset(task_workers)
 
         serializer = TaskWorkerSerializer(instance=task_workers, many=True,
-                                          fields=('id', 'results', 'worker', 'status', 'task',
+                                          fields=('id', 'results', 'worker', 'status', 'thanked', 'task',
                                                   'worker_alias', 'worker_rating', 'attempt',
                                                   'submitted_at', 'approved_at', 'task_data', 'task_template'))
 
