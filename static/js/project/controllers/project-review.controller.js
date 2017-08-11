@@ -26,6 +26,7 @@
         self.acceptAll = acceptAll;
         self.getStatus = getStatus;
         self.updateStatus = updateStatus;
+        self.thankWorker = thankWorker;
         self.downloadResults = downloadResults;
         self.setRating = setRating;
         self.returnTask = returnTask;
@@ -229,6 +230,21 @@
                 }
             ).finally(function () {
             });
+        }
+
+        function thankWorker(taskWorker) {
+          var request_data = {
+              "worker_id": taskWorker.id
+          };
+          Task.thankWorker(request_data).then(
+              function success(response) {
+                taskWorker.thanked = true;
+              },
+              function error(response) {
+                  $mdToast.showSimple('Could not thank worker');
+              }
+          ).finally(function () {
+          });
         }
 
         function downloadResults() {

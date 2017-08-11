@@ -30,6 +30,7 @@
             skipTask: skipTask,
             getTasks: getTasks,
             updateStatus: updateStatus,
+            thankWorker: thankWorker,
             downloadResults: downloadResults,
             getTaskComments: getTaskComments,
             saveComment: saveComment,
@@ -148,6 +149,15 @@
         function updateStatus(request_data) {
             var settings = {
                 url: '/api/task-worker/bulk-update-status/',
+                method: 'POST',
+                data: request_data
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function thankWorker(request_data) {
+            var settings = {
+                url: '/api/task-worker/thank-worker/',
                 method: 'POST',
                 data: request_data
             };

@@ -553,6 +553,16 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
             serialized_data = TaskWorkerSerializer(instance=instance).data
         return Response(serialized_data, http_status)
 
+
+    # Actually write out the code for this method
+    @list_route(methods=['post'], url_path='thank-worker')
+    def thank_worker(self, request, *args, **kswargs):
+        task_worker_id = request.data.get('worker_id')
+        task_worker = TaskWorker.objects.get(id=task_worker_id)
+        task_worker.thanked = True
+        task_worker.save()
+        return Response(data=task_worker_id, status=status.HTTP_200_OK)
+
     @list_route(methods=['post'], url_path='bulk-update-status')
     def bulk_update_status(self, request, *args, **kwargs):
         task_status = request.data.get('status', -1)

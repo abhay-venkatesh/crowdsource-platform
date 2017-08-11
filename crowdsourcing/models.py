@@ -625,6 +625,7 @@ class TaskWorker(TimeStampable, Archivable, Revisable):
     task = models.ForeignKey(Task, related_name='task_workers', on_delete=models.CASCADE)
     worker = models.ForeignKey(User, related_name='task_workers')
     status = models.IntegerField(choices=STATUS, default=STATUS_IN_PROGRESS, db_index=True)
+    thanked = models.BooleanField(default=False)
     is_paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(auto_now_add=False, auto_now=False, null=True)
     collective_rejection = models.OneToOneField(CollectiveRejection, null=True)
