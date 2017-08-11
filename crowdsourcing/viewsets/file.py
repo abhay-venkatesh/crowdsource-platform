@@ -39,7 +39,8 @@ class FileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Des
             ~Q(status=Project.STATUS_DRAFT), group_id=project.group_id).order_by('-id')
 
         if len(revisions) == 1 and revisions[0].template.items.filter(type='file_upload').count() == 0:
-            data, rows = self._fetch_results(revisions[0].id, revisions[0].batch_files.first())
+            data, rows = self._fetch_results(revisions[0].id, revisions[0].batch_files.first(),
+                                             revisions[0].template.items.filter(role='input').order_by('position'))
             # http_status = status.HTTP_200_OK if rows > 0 else status.HTTP_204_NO_CONTENT
             resp = HttpResponse(data)
             resp['Content-Disposition'] = 'attachment; filename={}.csv'.format(revisions[0].name.replace(' ', '_'))
@@ -51,7 +52,8 @@ class FileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Des
             zip_file = zipfile.ZipFile(zip_file_buffer, "w")
             r = len(revisions)
             for rev in revisions:
-                data, rows = self._fetch_results(rev.id, rev.batch_files.first())
+                data, rows = self._fetch_results(rev.id, rev.batch_files.first(),
+                                                 rev.template.items.filter(role='input').order_by('position'))
 
                 if rows > 0:
                     # file_upload_items = rev.template.items.filter(type='file_upload')
@@ -98,7 +100,7 @@ class FileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Des
                 str(field_name): result.result
             }
 
-    def _fetch_results(self, project_id, attachment=None):
+    def _fetch_results(self, project_id, attachment=None, input_items=None):
         task_worker_results = TaskWorkerResult.objects.select_related('task_worker__task', 'template_item',
                                                                       'task_worker__worker',
                                                                       'task_worker__worker__profile').filter(
@@ -114,7 +116,9 @@ class FileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Des
 
         task_worker_id = -1
         results = []
-        for result in task_worker_results:
+        max_key_length = 0
+        max_key_index = 0
+        for idx, result in enumerate(task_worker_results):
             if result.task_worker_id != task_worker_id:
                 task_worker_id = result.task_worker_id
                 results.append(OrderedDict([
@@ -134,11 +138,23 @@ class FileViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.Des
                         results[len(results) - 1].update(ordered_data)
                     else:
                         results[len(results) - 1].update(task_data)
+                if input_items is not None and len(input_items):
+                    template_input_fields = OrderedDict()
+                    for i in input_items:
+                        field_name = i.aux_attributes['question']['value']
+                        if i.name != '' and i.name is not None:
+                            field_name = i.name
+                        template_input_fields[field_name] = None
+                    results[len(results) - 1].update(template_input_fields)
             result_dict = self._to_dict(result)
             results[len(results) - 1].update(result_dict)
+            key_len = len(results[len(results) - 1].keys())
+            if key_len > max_key_length:
+                max_key_length = key_len
+                max_key_index = len(results) - 1
         df = pd.DataFrame(results)
         output = StringIO.StringIO()
-        df.to_csv(output, columns=results[0].keys(), index=False, encoding="utf-8")
+        df.to_csv(output, columns=results[max_key_index].keys(), index=False, encoding="utf-8")
         data = output.getvalue()
         output.close()
         return data, task_worker_results.count()
