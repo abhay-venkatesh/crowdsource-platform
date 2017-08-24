@@ -273,60 +273,65 @@ class ProjectViewSet(viewsets.ModelViewSet):
               owner_id,
               status,
               round(price, 2),
-              sum(paid_tasks) amount_paid,
-              sum(task_price) expected_payout_amount,
-              sum(returned)         returned,
-              sum(in_progress)      in_progress,
-              sum(accepted)         completed,
-              sum(submitted)         awaiting_review,
-              sum(paid_count)         paid_count,
-              case when min(estimated_expire) < now() then null else min(estimated_expire) end expires_at,
-              -- (max(submitted_at) + INTERVAL '1 day') payout_available_by
-              case when (latest_charge + INTERVAL '2 day') < max(submitted_at)
-              then  max(submitted_at) + INTERVAL '2 day'
-              else
-                 max(submitted_at) + INTERVAL '4 day'
-               end payout_available_by
+              sum(paid_tasks)                amount_paid,
+              sum(task_price)                expected_payout_amount,
+              sum(returned)                  returned,
+              sum(in_progress)               in_progress,
+              sum(accepted)                  completed,
+              sum(submitted)                 awaiting_review,
+              sum(paid_count)                paid_count,
+              count(nullif(thanked = FALSE, TRUE ))  thanked_count,
+              CASE WHEN min(estimated_expire) < now()
+                THEN NULL
+              ELSE min(estimated_expire) END expires_at,
+              CASE WHEN (latest_charge + INTERVAL '2 day') < max(submitted_at)
+                THEN max(submitted_at) + INTERVAL '2 day'
+              ELSE
+                max(submitted_at) + INTERVAL '4 day'
+              END                            payout_available_by
             FROM (SELECT
-                    p.group_id                                                                      id,
+                    p.group_id                                                            id,
                     p.name,
                     p.owner_id,
                     p.status,
                     p.price,
-                    case when tw.status = %(accepted)s then coalesce(t.price, p.price) else 0 end paid_tasks,
-                    coalesce(t.price, p.price) task_price,
-                    coalesce(p.timeout, INTERVAL %(default_timeout)s) timeout,
+                    tw.thanked,
+                    CASE WHEN tw.status = 3
+                      THEN coalesce(t.price, p.price)
+                    ELSE 0 END                                                            paid_tasks,
+                    coalesce(t.price, p.price)                                            task_price,
+                    coalesce(p.timeout, INTERVAL '24 hour')                               timeout,
                     coalesce(tw.started_at, tw.created_at) + coalesce(p.timeout,
-                        INTERVAL %(default_timeout)s) estimated_expire,
-                    CASE WHEN tw.status = (%(returned)s)
+                                                                      INTERVAL '24 hour') estimated_expire,
+                    CASE WHEN tw.status = 5
                       THEN 1
-                    ELSE 0 END                                                                      returned,
-                    CASE WHEN tw.status = (%(in_progress)s)
+                    ELSE 0 END                                                            returned,
+                    CASE WHEN tw.status = 1
                       THEN 1
-                    ELSE 0 END                                                                      in_progress,
-                    CASE WHEN tw.status = %(accepted)s
+                    ELSE 0 END                                                            in_progress,
+                    CASE WHEN tw.status = 3
                       THEN 1
-                    ELSE 0 END                                                                      accepted,
-                    CASE WHEN tw.status = %(submitted)s
+                    ELSE 0 END                                                            accepted,
+                    CASE WHEN tw.status = 2
                       THEN 1
-                    ELSE 0 END                                                                       submitted,
-                     CASE WHEN tw.is_paid is true
+                    ELSE 0 END                                                            submitted,
+                    CASE WHEN tw.is_paid IS TRUE
                       THEN 1
-                    ELSE 0 END paid_count,
+                    ELSE 0 END                                                            paid_count,
                     tw.submitted_at,
-                    max(scharge.created_at) latest_charge
+                    max(scharge.created_at)                                               latest_charge
                   FROM crowdsourcing_taskworker tw
                     INNER JOIN crowdsourcing_task t ON tw.task_id = t.id
                     INNER JOIN crowdsourcing_project p ON p.id = t.project_id
-                    inner join crowdsourcing_stripecustomer sc on sc.owner_id = p.owner_id
-                    inner join crowdsourcing_stripecharge scharge on scharge.customer_id=sc.id
-                    and scharge.created_at < p.revised_at
-                  WHERE tw.status not in ((%(skipped)s), (%(expired)s))
-                  AND tw.worker_id = (%(worker_id)s) AND p.is_review = FALSE
+                    INNER JOIN crowdsourcing_stripecustomer sc ON sc.owner_id = p.owner_id
+                    INNER JOIN crowdsourcing_stripecharge scharge ON scharge.customer_id = sc.id
+                                                                     AND scharge.created_at < p.revised_at
+                  WHERE tw.status NOT IN (6, 7)
+                        AND tw.worker_id = 8 AND p.is_review = FALSE
                   GROUP BY p.group_id,
                     p.name, p.owner_id, p.status, p.price,
-                   tw.status, tw.is_paid, p.timeout, tw.started_at, tw.created_at, tw.submitted_at, t.price
-                  ) tw
+                    tw.status, tw.thanked, tw.is_paid, p.timeout, tw.started_at, tw.created_at, tw.submitted_at, t.price
+                 ) tw
             GROUP BY tw.id, tw.name, tw.owner_id, tw.status, tw.price, latest_charge
             ORDER BY returned DESC, in_progress DESC, id DESC;
         '''
@@ -344,18 +349,20 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer = ProjectSerializer(instance=projects, many=True,
                                        fields=('id', 'name', 'owner', 'price', 'status', 'returned',
                                                'in_progress', 'awaiting_review', 'completed', 'expires_at',
-                                               'payout_available_by', 'paid_count',
+                                               'payout_available_by', 'paid_count', 'thanked_count',
                                                'expected_payout_amount', 'amount_paid'),
                                        context={'request': request})
         response_data = {
             "in_progress": [],
             "completed": [],
         }
+
         for p in serializer.data:
             if p['returned'] > 0 or p['in_progress'] > 0:
                 response_data['in_progress'].append(p)
             elif p['completed'] > 0 or p['awaiting_review'] > 0:
                 response_data['completed'].append(p)
+                print(p)
         return Response(data=response_data, status=status.HTTP_200_OK)
 
     @list_route(methods=['GET'], url_path='for-requesters')

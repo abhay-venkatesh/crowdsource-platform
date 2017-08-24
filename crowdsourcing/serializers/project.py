@@ -29,6 +29,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
     in_progress = serializers.IntegerField(read_only=True)
     completed = serializers.IntegerField(read_only=True)
     paid_count = serializers.IntegerField(read_only=True)
+    thanked_count = serializers.IntegerField()
     awaiting_review = serializers.IntegerField(read_only=True)
     checked_out = serializers.IntegerField(read_only=True)
     returned = serializers.IntegerField(read_only=True)
@@ -69,7 +70,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
                   'qualification', 'relaunch', 'group_id', 'revisions', 'hash_id', 'is_api_only', 'in_progress',
                   'awaiting_review', 'completed', 'review_price', 'returned', 'requester_handle',
                   'allow_price_per_task', 'task_price_field', 'discussion_link', 'aux_attributes',
-                  'payout_available_by', 'paid_count', 'expected_payout_amount', 'amount_paid',
+                  'payout_available_by', 'paid_count', 'thanked_count', 'expected_payout_amount', 'amount_paid',
                   'checked_out', 'publish_at')
         read_only_fields = (
             'created_at', 'updated_at', 'deleted_at', 'has_comments', 'available_tasks',
