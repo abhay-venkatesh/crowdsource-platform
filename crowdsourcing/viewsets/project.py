@@ -362,7 +362,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 response_data['in_progress'].append(p)
             elif p['completed'] > 0 or p['awaiting_review'] > 0:
                 response_data['completed'].append(p)
-                print(p)
         return Response(data=response_data, status=status.HTTP_200_OK)
 
     @list_route(methods=['GET'], url_path='for-requesters')
