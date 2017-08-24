@@ -196,13 +196,13 @@
                                              ng-class="{'_clickable': task.status != review.status.ACCEPTED}"
                                              ng-click="review.updateStatus(review.status.ACCEPTED, task)">
                                         {{ task.status == review.status.ACCEPTED ? 'check_circle':'check_box_outline_blank' }}</md-icon>
-                                      
-                                    <md-button class="" ng-show="task.status == review.status.ACCEPTED" ng-hide="task.status != review.status.ACCEPTED"
-                                      ng-click="review.thankWorker(task)" ng-disabled="task.thanked"> 
+
+                                    <md-button class="" ng-if="task.status == review.status.ACCEPTED" 
+                                      ng-click="review.thankWorker(task)" ng-disabled="task.thanked">
                                       <md-icon md-font-set="material-icons">thumb_up</md-icon>
-                                      Nice Work 
+                                      Nice Work
                                     </md-button>
-                                            
+
                                 </td>
                                 <td>
                                     <md-icon md-font-set="material-icons"
