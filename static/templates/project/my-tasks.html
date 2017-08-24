@@ -91,6 +91,7 @@
                      ng-class="{'_completed': item.status==project.status.STATUS_IN_PROGRESS ||
                          item.status==project.status.STATUS_COMPLETED, '_draft': item.status==project.status.STATUS_DRAFT ||
                          item.status==project.status.STATUS_PAUSED}">
+
                     <div>
                         <ng-pluralize count="item.returned" ng-if="item.returned>0" class="_card-list-label"
                                       style="color: red" when="{'0': '', '1': '1 task has been returned for revision',
@@ -98,8 +99,15 @@
                         </ng-pluralize>
                     </div>
 
-                    <div ng-if="item.returned==0 && item.in_progress==0" class="_card-list-text _title"
-                         style="color: rgba(0, 0, 0, 0.7);">{{ item.name }}
+                    <div layout="row">
+                        <div flex="95" ng-if="item.returned==0 && item.in_progress==0" class="_card-list-text _title"
+                             style="color: rgba(0, 0, 0, 0.7);">{{ item.name }}
+                        </div>
+                        <div flex="5" class="_right-aligned">
+                            <div ng-if="item.thanked_count > 0">
+                                <md-icon md-font-set="material-icons">grade</md-icon>
+                            </div>
+                        </div>
                     </div>
 
                     <div layout="row">
@@ -143,16 +151,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <div class="_inline">
-                                <div class="_card-list-label">Thanked</div>
-                                <div class="_card-list-text _small">
-                                    {{ item.thanked_count }} /
-                                    {{ item.completed }}
-                                </div>
-                            </div>
-                        </div>
-
 
                     </div>
                 </div>
