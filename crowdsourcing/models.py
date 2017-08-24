@@ -468,6 +468,7 @@ class Project(TimeStampable, Archivable, Revisable):
     keywords = models.TextField(null=True, blank=True)
 
     status = models.IntegerField(choices=STATUS, default=STATUS_DRAFT)
+    thanked_count = models.IntegerField(default=0)
     qualification = models.ForeignKey('Qualification', null=True)
 
     price = models.DecimalField(decimal_places=2, max_digits=19, null=True)
