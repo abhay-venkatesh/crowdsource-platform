@@ -29,7 +29,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
     in_progress = serializers.IntegerField(read_only=True)
     completed = serializers.IntegerField(read_only=True)
     paid_count = serializers.IntegerField(read_only=True)
-    thanked_count = serializers.IntegerField()
+    thanked_count = serializers.IntegerField(required=False, read_only=True)
     awaiting_review = serializers.IntegerField(read_only=True)
     checked_out = serializers.IntegerField(read_only=True)
     returned = serializers.IntegerField(read_only=True)
@@ -75,7 +75,7 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
         read_only_fields = (
             'created_at', 'updated_at', 'deleted_at', 'has_comments', 'available_tasks',
             'comments', 'template', 'is_api_only', 'discussion_link', 'aux_attributes',
-            'payout_available_by', 'paid_count', 'expected_payout_amount', 'amount_paid')
+            'payout_available_by', 'paid_count', 'thanked_count', 'expected_payout_amount', 'amount_paid')
 
         validators = [ProjectValidator()]
 
@@ -512,7 +512,6 @@ class ProjectSerializer(DynamicFieldsModelSerializer):
         except Exception as e:
             raise e
             # raise ValidationError(detail="An error occurred while creating tasks.")
-
 
 class QualificationApplicationSerializer(serializers.ModelSerializer):
     class Meta:

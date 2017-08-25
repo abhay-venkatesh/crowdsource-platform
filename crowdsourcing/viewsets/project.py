@@ -263,6 +263,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 raise serializers.ValidationError(detail=serializer.errors)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+
     @list_route(methods=['get'], url_path='for-workers')
     def worker_projects(self, request, *args, **kwargs):
         # noinspection SqlResolve

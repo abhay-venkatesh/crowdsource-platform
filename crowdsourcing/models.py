@@ -152,7 +152,6 @@ class UserPasswordReset(TimeStampable):
     user = models.OneToOneField(User)
     reset_key = models.CharField(max_length=40)
 
-
 class UserProfile(TimeStampable, Verifiable):
     MALE = 'M'
     FEMALE = 'F'
@@ -426,6 +425,9 @@ class ProjectQueryset(models.query.QuerySet):
             'worker_data': worker_data
         })
 
+class HighFive(TimeStampable):
+    project_id = models.IntegerField()
+    worker = models.ForeignKey(User, related_name="+")
 
 class Project(TimeStampable, Archivable, Revisable):
     STATUS_DRAFT = 1
@@ -468,7 +470,6 @@ class Project(TimeStampable, Archivable, Revisable):
     keywords = models.TextField(null=True, blank=True)
 
     status = models.IntegerField(choices=STATUS, default=STATUS_DRAFT)
-    thanked_count = models.IntegerField(default=0)
     qualification = models.ForeignKey('Qualification', null=True)
 
     price = models.DecimalField(decimal_places=2, max_digits=19, null=True)

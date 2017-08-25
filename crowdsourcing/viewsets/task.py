@@ -19,7 +19,7 @@ from ws4redis.redis_store import RedisMessage
 from crowdsourcing import constants
 from crowdsourcing.exceptions import daemo_error
 from crowdsourcing.models import Task, TaskWorker, TaskWorkerResult, UserPreferences, ReturnFeedback, \
-    User, MatchGroup, Batch, Match, WorkerMatchScore, MatchWorker
+    User, MatchGroup, Batch, Match, WorkerMatchScore, MatchWorker, HighFive
 from crowdsourcing.permissions.task import IsTaskOwner, IsQualified  # HasExceededReservedLimit
 from crowdsourcing.permissions.util import IsSandbox
 from crowdsourcing.serializers.project import ProjectSerializer
@@ -554,8 +554,6 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
             serialized_data = TaskWorkerSerializer(instance=instance).data
         return Response(serialized_data, http_status)
 
-
-    # Actually write out the code for this method
     @list_route(methods=['post'], url_path='thank-worker')
     def thank_worker(self, request, *args, **kswargs):
         task_worker_id = request.data.get('worker_id')
@@ -563,6 +561,27 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
         task_worker.thanked = True
         task_worker.save()
         return Response(data=task_worker_id, status=status.HTTP_200_OK)
+
+    @list_route(methods=['post'], url_path='thank-requester')
+    def thank_requester(self, request, *args, **kswargs):
+        worker_id = request.data.get('worker_id')
+        project_id = request.data.get('project_id')
+        try:
+            highFive = HighFive.objects.get(worker_id=worker_id, project_id=project_id)
+        except HighFive.DoesNotExist:
+            highFive = HighFive.objects.create(worker_id=worker_id,
+                project_id=project_id)
+        return Response(data=project_id, status=status.HTTP_200_OK)
+
+    @list_route(methods=['get'], url_path='get-high-fives')
+    def get_high_fives(self, request, *args, **kswargs):
+        project_id = request.query_params.get('project_id')
+        highFives = HighFive.objects.all().filter(project_id=project_id)
+        worker_ids = []
+        for highFive in highFives:
+            worker_ids.append(highFive.worker_id)
+        print(worker_ids)
+        return Response(data=worker_ids, status=status.HTTP_200_OK)
 
     @list_route(methods=['post'], url_path='bulk-update-status')
     def bulk_update_status(self, request, *args, **kwargs):

@@ -134,7 +134,10 @@
                     <div class="md-subheader" style="top: -4px !important; position: -webkit-sticky; position: sticky; z-index: 2; padding: 2px 16px;">
                         <div layout="row" layout-align="start center">
                             <div class="_clickable" style="min-height: 24px; line-height: 24px"
-                                 ui-sref="public_profile({handle:worker.worker_alias})">{{ worker.worker_alias }}</div>
+                                 ui-sref="public_profile({handle:worker.worker_alias})">{{ worker.worker_alias }}
+
+                             </div>
+                             <div ng-if="worker.highFived != null"> &nbsp thanked you! </div>
                             <div class="_header-actions _hide-xs" style="margin-right: 0">
                                 <md-button ng-click="review.setRating(worker.worker, worker.worker_rating, 3.0)"
                                            ng-class="{'_button-active': worker.worker_rating.weight==3.0}">
@@ -197,7 +200,7 @@
                                              ng-click="review.updateStatus(review.status.ACCEPTED, task)">
                                         {{ task.status == review.status.ACCEPTED ? 'check_circle':'check_box_outline_blank' }}</md-icon>
 
-                                    <md-button class="" ng-if="task.status == review.status.ACCEPTED" 
+                                    <md-button class="" ng-if="task.status == review.status.ACCEPTED"
                                       ng-click="review.thankWorker(task)" ng-disabled="task.thanked">
                                       <md-icon md-font-set="material-icons">thumb_up</md-icon>
                                       Nice Work

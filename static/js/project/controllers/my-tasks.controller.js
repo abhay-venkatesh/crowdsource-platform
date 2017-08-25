@@ -6,12 +6,13 @@
         .controller('MyTasksController', MyTasksController);
 
     MyTasksController.$inject = ['$scope', 'Project', 'Task', '$mdToast',
-        '$filter', 'RatingService', 'TaskWorker', '$state'];
+        '$filter', 'RatingService', 'TaskWorker', '$state', 'User'];
 
     /**
      * @namespace MyTasksController
      */
-    function MyTasksController($scope, Project, Task, $mdToast, $filter, RatingService, TaskWorker, $state) {
+    function MyTasksController($scope, Project, Task, $mdToast, $filter, RatingService, TaskWorker, $state,
+        User) {
         var self = this;
         self.projects = [];
         self.loading = true;
@@ -25,6 +26,7 @@
         self.dropSavedTasks = dropSavedTasks;
         self.getAmount = getAmount;
         self.openTask = openTask;
+        self.thankRequester = thankRequester;
         self.tasks = [];
         self.status = {
             RETURNED: 5,
@@ -164,6 +166,33 @@
                     $mdToast.showSimple('Error: ' + message);
                 }
             ).finally(function () {
+            });
+        }
+
+        // TODO: In process
+        function thankRequester(project) {
+            var dummy_profile = {
+            }
+            User.getProfile(dummy_profile).then(
+                function success(response) {
+                    var worker_id = response[0].id;
+                    var request_data = {
+                      "project_id": project.id,
+                      "worker_id": worker_id
+                    };
+                    Task.thankRequester(request_data).then(
+                      function success(response) {
+                        project.requesterThanked = true;
+                      },
+                      function error(response) {
+                          $mdToast.showSimple('Could not thank worker');
+                      }
+                    ).finally(function () {
+                    });
+                },
+                function error(response) {
+                }
+            ).finally(function() {
             });
         }
     }

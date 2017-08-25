@@ -150,6 +150,12 @@
                                 </div>
                             </div>
                         </div>
+                        <div ng-if="item.completed">
+                            <md-button class="md-raised _thank-requester-button"  ng-click="myTasks.thankRequester(item)" >
+                              <md-icon md-font-set="material-icons">thumb_up</md-icon>
+                              Thank Requester
+                            </md-button>
+                        </div>
                     </div>
                 </div>
 

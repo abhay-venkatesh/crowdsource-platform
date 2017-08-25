@@ -46,7 +46,9 @@
             relaunchAll: relaunchAll,
             getOtherResponses: getOtherResponses,
             attachFile: attachFile,
-            reject: reject
+            reject: reject,
+            thankRequester: thankRequester,
+            getHighFives: getHighFives
         };
 
         return Task;
@@ -160,6 +162,23 @@
                 url: '/api/task-worker/thank-worker/',
                 method: 'POST',
                 data: request_data
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function thankRequester(request_data) {
+            var settings = {
+                url: 'api/task-worker/thank-requester/',
+                method: 'POST',
+                data: request_data
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function getHighFives(request_data) {
+            var settings = {
+                url: 'api/task-worker/get-high-fives/' + '?project_id=' + request_data.project_id ,
+                method: 'GET'
             };
             return HttpService.doRequest(settings);
         }

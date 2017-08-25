@@ -72,6 +72,7 @@
             Project.getWorkersToRate(self.resolvedData.id, self.sortBy).then(
                 function success(response) {
                     self.workers = response[0].workers;
+                    getHighFives();
                     self.project_template = response[0].project_template;
                     self.nextPage = response[0].next;
                     if (!self.sortBy || self.sortBy === '-') {
@@ -261,6 +262,28 @@
               }
           ).finally(function () {
           });
+        }
+
+        function getHighFives() {
+            var request_data = {
+                "project_id": self.resolvedData.id
+            }
+            Task.getHighFives(request_data).then(
+                function success(response) {
+                    var workerHighFives = response[0];
+                    workerHighFives.forEach(function(highFive) {
+                        self.workers.forEach(function(worker) {
+                            if(worker.worker == highFive) {
+                                worker.highFived = true;
+                            }
+                        })
+                    })
+                },
+                function error(response) {
+                    console.log("Could not get high-fives.");
+                }
+            ).finally(function() {
+            });
         }
 
         function downloadResults() {
