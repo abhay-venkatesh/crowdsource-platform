@@ -48,7 +48,8 @@
             attachFile: attachFile,
             reject: reject,
             thankRequester: thankRequester,
-            getHighFives: getHighFives
+            getHighFives: getHighFives,
+            getHighFivedProjects: getHighFivedProjects
         };
 
         return Task;
@@ -178,6 +179,14 @@
         function getHighFives(request_data) {
             var settings = {
                 url: 'api/task-worker/get-high-fives/' + '?project_id=' + request_data.project_id ,
+                method: 'GET'
+            };
+            return HttpService.doRequest(settings);
+        }
+
+        function getHighFivedProjects(request_data) {
+            var settings = {
+                url: 'api/task-worker/get-high-fived-projects/' + '?worker_id=' + request_data.worker_id,
                 method: 'GET'
             };
             return HttpService.doRequest(settings);

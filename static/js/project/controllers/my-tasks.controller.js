@@ -43,11 +43,45 @@
                     self.loading = false;
                     self.projects = response[0];
                     //loadFirst();
+                    getHighFivedProjects();
+
                 },
                 function error(response) {
                     $mdToast.showSimple('Could not get tasks.');
                 }
             ).finally(function () {
+            });
+        }
+
+        function getHighFivedProjects() {
+            var dummy_profile = {
+            }
+            User.getProfile(dummy_profile).then(
+                function success(response) {
+                    var worker_id = response[0].id;
+                    var request_data = {
+                        "worker_id": worker_id
+                    }
+                    Task.getHighFivedProjects(request_data).then(
+                        function success(response) {
+                            var highFivedProjects = response[0];
+                            self.projects.completed.forEach(function(project) {
+                                highFivedProjects.forEach(function(highFivedProject) {
+                                    if(project.id == highFivedProject) {
+                                        project.requesterThanked = true;
+                                    }
+                                });
+                            });
+                        },
+                        function error(response) {
+                            console.log("Could not get high fived projects.");
+                        }
+                    ).finally(function() {
+                    });
+                },
+                function error(response) {
+                }
+            ).finally(function() {
             });
         }
 

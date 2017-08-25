@@ -583,6 +583,16 @@ class TaskWorkerViewSet(viewsets.ModelViewSet):
         print(worker_ids)
         return Response(data=worker_ids, status=status.HTTP_200_OK)
 
+    @list_route(methods=['get'], url_path='get-high-fived-projects')
+    def get_high_fived_projects(self, request, *args, **kswargs):
+        worker_id = request.query_params.get('worker_id')
+        highFives = HighFive.objects.all().filter(worker_id=worker_id)
+        project_ids = []
+        for highFive in highFives:
+            project_ids.append(highFive.project_id)
+        print(project_ids)
+        return Response(data=project_ids, status=status.HTTP_200_OK)
+
     @list_route(methods=['post'], url_path='bulk-update-status')
     def bulk_update_status(self, request, *args, **kwargs):
         task_status = request.data.get('status', -1)
