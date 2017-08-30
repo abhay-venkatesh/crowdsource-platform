@@ -54,9 +54,7 @@
         }
 
         function getHighFivedProjects() {
-            var dummy_profile = {
-            }
-            User.getProfile(dummy_profile).then(
+            User.getProfile().then(
                 function success(response) {
                     var worker_id = response[0].id;
                     var request_data = {
@@ -203,11 +201,8 @@
             });
         }
 
-        // TODO: In process
         function thankRequester(project) {
-            var dummy_profile = {
-            }
-            User.getProfile(dummy_profile).then(
+            User.getProfile().then(
                 function success(response) {
                     var worker_id = response[0].id;
                     var request_data = {
