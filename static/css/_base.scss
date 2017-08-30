@@ -527,9 +527,9 @@ md-content {
 }
 
 .authentication-error {
-    color: $badge_red;
-    font-size: 12px;
-    font-weight: 500;
+    color: $error_color;
+    font-size: small;
+    //font-weight: 500;
 }
 
 ._text-error {
@@ -828,7 +828,7 @@ img.circular {
 
 ._error {
     color: $aspirin_orange;
-    font-weight: 500;
+    //font-weight: 500;
     //padding-bottom: 8px;
     &._small {
         font-size: $font_small;
@@ -1066,8 +1066,8 @@ table td, table th {
     //-webkit-hyphens: auto;
     //hyphens: auto;
     max-width: 128px;
-    vertical-align: top;
-    padding-top: 8px;
+    //vertical-align: top;
+    //padding-top: 8px;
     //margin-bottom: 8px;
     //line-height: 1.2em;
     //max-height: 2.4em;
@@ -1115,6 +1115,7 @@ md-input-container {
 
 ._card-list-item {
     padding: 16px;
+    border-left: solid 4px white;
     //min-height: 64px;
     &._draft {
         border-left: solid 4px rgba($palette_accent, 0.2);
@@ -1201,6 +1202,7 @@ md-input-container {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-weight: 500;
     @media only screen and (max-width: 480px) {
         max-width: 240px;
     }
@@ -1769,5 +1771,9 @@ code {
         border-left: solid 4px transparent;
 
     }
+}
 
+
+md-input-container .md-input {
+    padding-left: 0 !important;
 }

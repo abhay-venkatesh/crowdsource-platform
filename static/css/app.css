@@ -1150,12 +1150,11 @@ md-content {
   box-shadow: rgba(0, 0, 0, 0.14902) 0px 1px 1px 0px, rgba(0, 0, 0, 0.09804) 0px 1px 2px 0px; }
 
 .authentication-error {
-  color: #ff5722;
-  font-size: 12px;
-  font-weight: 500; }
+  color: #EB7F00;
+  font-size: small; }
 
 ._text-error {
-  color: #F44336;
+  color: #EB7F00;
   font-size: small; }
 
 ._text-ok {
@@ -1372,8 +1371,7 @@ img.circular {
   text-overflow: ellipsis; }
 
 ._error {
-  color: #EB7F00;
-  font-weight: 500; }
+  color: #EB7F00; }
   ._error._small {
     font-size: 14px; }
   ._error._tiny {
@@ -1478,9 +1476,9 @@ img.circular {
     line-height: 32px;
     text-align: center; }
     ._dialog ._user._blocked {
-      color: #F44336; }
+      color: #EB7F00; }
       ._dialog ._user._blocked ._detail-secondary {
-        color: rgba(244, 67, 54, 0.54); }
+        color: rgba(235, 127, 0, 0.54); }
     ._dialog ._user._unblocked {
       color: rgba(0, 0, 0, 0.2); }
       ._dialog ._user._unblocked ._detail-secondary {
@@ -1553,8 +1551,6 @@ table th {
 table td, table th {
   overflow-wrap: break-word;
   max-width: 128px;
-  vertical-align: top;
-  padding-top: 8px;
   overflow: hidden; }
 
 ._pd-32 {
@@ -1590,7 +1586,8 @@ md-input-container {
   line-height: 18px; }
 
 ._card-list-item {
-  padding: 16px; }
+  padding: 16px;
+  border-left: solid 4px white; }
   ._card-list-item._draft {
     border-left: solid 4px rgba(242, 97, 1, 0.2); }
   ._card-list-item._completed {
@@ -1639,7 +1636,8 @@ md-input-container {
   max-width: 550px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap; }
+  white-space: nowrap;
+  font-weight: 500; }
   @media only screen and (max-width: 480px) {
     ._title {
       max-width: 240px; } }
@@ -2002,6 +2000,9 @@ code {
     padding-left: 16px;
     border-left: solid 4px transparent; }
 
+md-input-container .md-input {
+  padding-left: 0 !important; }
+
 .advanced-tabs {
   margin: 8px; }
 
@@ -2242,24 +2243,19 @@ md-list-item.rate-list-item {
   color: rgba(0, 0, 0, 0.7); }
 
 ._task-top {
-  margin: 6px;
-  padding: 10px 0 0;
+  margin: 6px 16px;
   font-size: small; }
   ._task-top ._price {
     color: rgba(0, 0, 0, 0.7);
-    font-weight: 500;
     font-size: large;
-    text-align: right;
     margin-right: 10px; }
   ._task-top ._time {
-    opacity: 0.54;
-    text-align: right;
-    margin-right: 10px; }
+    color: rgba(0, 0, 0, 0.54); }
   ._task-top ._title {
     font-weight: 500;
     font-size: large; }
   ._task-top ._tasks-available {
-    opacity: 0.54; }
+    color: rgba(0, 0, 0, 0.7); }
   ._task-top ._author {
     text-align: right;
     padding-top: 8px;
@@ -2340,7 +2336,7 @@ md-list-item.rate-list-item {
   font-weight: 500;
   padding-top: 32px;
   padding-bottom: 32px;
-  color: rgba(244, 67, 54, 0.87); }
+  color: rgba(235, 127, 0, 0.87); }
 
 h3.my-profile-header {
   color: black; }
@@ -2556,7 +2552,8 @@ md-toolbar.my-profile-toolbar {
   height: 16px;
   width: 16px;
   text-align: center;
-  vertical-align: top; }
+  vertical-align: top;
+  margin-left: 4px; }
 
 ._online:not(._offline)::before {
   content: '';

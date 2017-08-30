@@ -20,6 +20,7 @@
         self.clearFiles = clearFiles;
         self.skip = skip;
         self.setRating = setRating;
+        self.getMinWage = getMinWage;
         self.submitOrSave = submitOrSave;
         self.showRejectForm = false;
         self.saveComment = saveComment;
@@ -32,6 +33,7 @@
         self.rejectionDetail = null;
         self.rejected = false;
         self.rejectTask = rejectTask;
+        self.getTimeFormat = getTimeFormat;
         self.isReadyToLaunch = null;
         self.feedback = null;
         self.reject_reason = {
@@ -105,6 +107,17 @@
 
         }
 
+        function getTimeFormat(seconds) {
+            if (seconds < 60) {
+                return 'seconds';
+            }
+            else if (seconds > 60 && seconds < 3600) {
+                return 'minutes';
+            }
+            else {
+                return 'hours';
+            }
+        }
 
         function skip() {
             self.loading = true;
@@ -349,6 +362,14 @@
                 function error(errData) {
                     $mdToast.showSimple('An error occurred while rejecting this task.');
                 });
+        }
+
+        function getMinWage() {
+            var p = self.taskData.project_data.price / 10.5;
+            if (p > 0.017) {
+                return Math.round((p * 60)).toString() === '1' ? '1 minute' : Math.round((p * 60)).toString() + ' minutes';
+            }
+            return Math.round((p * 60) * 60).toString() + ' seconds';
         }
 
 

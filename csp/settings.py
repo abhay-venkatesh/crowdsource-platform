@@ -201,9 +201,9 @@ USERNAME_MAX_LENGTH = 30
 CORS_ORIGIN_ALLOW_ALL = True
 # Use only to restrict to specific servers/domains
 
-CORS_ORIGIN_WHITELIST = (
-    'stanford-qa.com',
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'stanford-qa.com',
+# )
 
 CORS_URLS_REGEX = r'^/api/done/*$'
 CORS_ALLOW_METHODS = (
@@ -456,7 +456,7 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         'daemo.herokuapp.com', 'daemo.stanford.edu',
         'daemo-staging.herokuapp.com', 'daemo-staging.stanford.edu',
-        'daemo.org', 'www.daemo.org'
+        'daemo.org', 'www.daemo.org', 'daemo-test.herokuapp.com'
     ]
 
 REQUIRED_CONFIGS = ['AWS_DAEMO_KEY', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'STRIPE_SECRET_KEY',
