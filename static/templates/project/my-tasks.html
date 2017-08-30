@@ -104,7 +104,8 @@
                     <div>
                         <div class="_right-aligned">
                             <div ng-if="item.thanked_count > 0">
-                                <span class="_prototype-badge">Nice Work</span>
+                              <md-icon md-font-set="material-icons">grade</md-icon>
+                              <md-tooltip> Your requester thought you did a good job! </md-tooltip>
                             </div>
                         </div>
                     </div>
@@ -150,17 +151,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div ng-if="item.completed">
-                            <md-button class="md-raised _thank-requester-button"  ng-click="myTasks.thankRequester(item)" ng-disabled="item.requesterThanked">
-                              <md-icon md-font-set="material-icons">thumb_up</md-icon>
-                              Thank Requester
-                            </md-button>
-                        </div>
+                        <md-button ng-if="item.completed" class="md-icon-button" ng-click="myTasks.thankRequester(item)" ng-disabled="item.requesterThanked">
+                            <md-icon md-font-set="material-icons">{{ item.requesterThanked == true ? 'favorite' : 'favorite_outline' }}</md-icon>
+                            <md-tooltip>Thank your requester</md-tooltip>
+                        </md-button>
                     </div>
                 </div>
-
             </section>
         </md-content>
-
     </div>
 </div>
